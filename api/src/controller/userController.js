@@ -1,5 +1,6 @@
 const connect = require("../db/connect");
 const validateUser = require("../services/validateUser");
+const validateCPF = require("../services/validateCPF")
 module.exports = class userController {
   static async createUser(req, res) {
     const { cpf, email, password, name, data_nascimento } = req.body;
