@@ -101,7 +101,7 @@ module.exports = class userController {
 
   static async updateUser(req, res) {
     //Desestrutura e recupera os dados enviados via corpo da requisição
-    const { cpf, email, password, name, id } = req.body;
+    const { cpf, email, password, name, id, data_nascimento } = req.body;
     //Validar se todos os campos foram preenchidos
   const validation = validateUser(req.body)
   if(validation){
@@ -111,8 +111,8 @@ module.exports = class userController {
     if (validationCPF){
       return res.status (400).json(validationCPF)
     }
-    const query = `UPDATE usuario SET name=?, email=?, password=?, cpf=? WHERE id_usuario = ?`;
-    const values = [name, email, password, cpf, id];
+    const query = `UPDATE usuario SET name=?, email=?, password=?, cpf=?, data_nascimento? WHERE id_usuario = ?`;
+    const values = [name, email, password, cpf, id, data_nascimento];
     try {
       connect.query(query, values, function (err, results) {
         if (err) {
