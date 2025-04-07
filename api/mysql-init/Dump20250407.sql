@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `vio_jon` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `vio_jon`;
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: localhost    Database: vio_jon
@@ -41,23 +43,6 @@ LOCK TABLES `compra` WRITE;
 INSERT INTO `compra` VALUES (1,'2024-11-14 19:04:00',1),(2,'2024-11-13 17:00:00',1),(3,'2024-11-12 15:30:00',2),(4,'2024-11-11 14:20:00',2);
 /*!40000 ALTER TABLE `compra` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Temporary view structure for view `compras_por_usuarios`
---
-
-DROP TABLE IF EXISTS `compras_por_usuarios`;
-/*!50001 DROP VIEW IF EXISTS `compras_por_usuarios`*/;
-SET @saved_cs_client     = @@character_set_client;
-/*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `compras_por_usuarios` AS SELECT 
- 1 AS `usuario`,
- 1 AS `evento`,
- 1 AS `data_compra`,
- 1 AS `tipo_ingresso`,
- 1 AS `quantidade`,
- 1 AS `preco_total`*/;
-SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `evento`
@@ -235,22 +220,12 @@ INSERT INTO `usuario` VALUES (1,'João Silva','joao.silva@example.com','senha123
 UNLOCK TABLES;
 
 --
--- Final view structure for view `compras_por_usuarios`
+-- Dumping events for database 'vio_jon'
 --
 
-/*!50001 DROP VIEW IF EXISTS `compras_por_usuarios`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`alunods`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `compras_por_usuarios` (`usuario`,`evento`,`data_compra`,`tipo_ingresso`,`quantidade`,`preco_total`) AS select `u`.`name` AS `Usuario`,`e`.`nome` AS `Evento`,`c`.`data_compra` AS `Data_compra`,`i`.`tipo` AS `Tipo_ingresso`,sum((case when (`i`.`tipo` = 'vip') then `ic`.`quantidade` else 0 end)) AS `Quantidade_VIP`,round(sum((`ic`.`quantidade` * `i`.`preco`)),2) AS `Preco_Total` from ((((`usuario` `u` join `compra` `c` on((`u`.`id_usuario` = `c`.`fk_id_usuario`))) join `ingresso_compra` `ic` on((`c`.`id_compra` = `ic`.`fk_id_compra`))) join `ingresso` `i` on((`ic`.`fk_id_ingresso` = `i`.`id_ingresso`))) join `evento` `e` on((`i`.`fk_id_evento` = `e`.`id_evento`))) group by `u`.`name`,`e`.`nome`,`c`.`data_compra`,`i`.`tipo` */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
+--
+-- Dumping routines for database 'vio_jon'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -261,4 +236,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-10 10:55:30
+-- Dump completed on 2025-04-07  7:52:06
