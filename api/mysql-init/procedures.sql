@@ -59,3 +59,55 @@ values (now(), p_id_evento,p_id_compra);
 end; //
 delimiter ;
 
+delimiter $$
+
+create procedure resumo_usuario(in pid int)
+begin
+    declare nome varchar(100);
+    declare email varchar(100);
+    declare totalrs decimal(10,2);
+    declare faixa varchar(20);
+    
+    -- Select do nome e email do usuário
+    select u.name, u.email into nome, email
+    from usuario u
+    where u.id_usuario = pid;
+
+    -- Chamada das funções específicas já criadas
+    set totalrs = calcula_total_gasto(pid);
+    set faixa = buscar_faixa_etaria_usuario(pid);
+
+    -- Mostra os dados formatados
+    select nome as nome_usuario,
+           email as email_usuario,
+           totalrs as total_gasto,
+           faixa as faixa_etaria;
+end; $$
+
+delimiter ;
+
+delimiter $$
+create procedure resumo_evento(in pididi int)
+begin
+    declare nome varchar(100);
+    declare data date;
+    declare ingressos_vendidos int;
+    declare renda_arrecadada decimal;
+    
+    -- Select do nome e email do usuário
+    select e.nome, cast(e.data_hora as date) into nome, data
+    from evento e
+    where e.id_evento = pididi;
+
+    -- Chamada das funções específicas já criadas
+    set ingressos_vendidos = total_ingressos_vendidos(pididi);
+    set renda_arrecadada = renda_total_evento(pididi);
+
+    -- Mostra os dados formatados
+    select nome,
+           data,
+          ingressos_vendidos,
+          renda_arrecadada;
+end; $$
+
+delimiter ;

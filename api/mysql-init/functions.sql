@@ -96,3 +96,132 @@ end; $$
 delimiter ;
 
 select mensagem_boas_vindas("seu nome");
+
+select routine_name from information_schema.routines where routine_type = 'FUNCTION' and routine_schema = 'vio_jon';
+
+delimiter $$
+
+create function is_maior_idade(data_nascimento date)
+returns boolean
+not deterministic
+contains sql
+begin
+    declare idade int;
+
+    set idade = calcula_idade(data_nascimento);
+    return idade >= 18;
+
+end; $$
+
+delimiter ;
+
+delimiter $$
+
+create function faixa_etaria(data_nascimento date)
+returns varchar(20)
+not deterministic
+contains sql
+begin   
+    declare idade int;
+    set idade = calcula_idade(data_nascimento);
+    if idade < 18 then 
+        return "menor de idade";
+    elseif idade < 60 then
+        return "adulto";
+    else 
+        return "idoso";
+    end if;
+end; $$
+delimiter ;
+
+-- agrupa clientes por faixa etaria
+
+select faixa_etaria(data_nascimento) as faixa, count(*) as quantidade from usuario group by faixa;
+
+--identificar uma faixa etaria especifica
+
+select name from usuario
+    where faixa_etaria(data_nascimento) = "adulto";
+
+    --calculo da media de idade dos usuarios cadastrados
+delimiter $$
+
+create function media_idade()
+returns decimal(5,2)
+not deterministic
+reads sql data
+ begin 
+    declare media decimal(5,2);
+    -- calculo da media das idades 
+    select avg(timestampdiff(year, data_nascimento,curdate())) into media from usuario;
+
+    return ifnull(media, 0);
+end; $$
+
+delimiter ;
+
+select "a media de idade dos clientes é maior que 30" as resultado where media_idade() > 30;
+
+-- Exercicio direcionado
+-- calculo do total gasto do usuario
+
+delimiter $$
+create function calcula_total_gasto(pid_usuario int)
+returns decimal(10,2)
+not deterministic
+reads sql data
+begin
+    declare total decimal(10,2);
+    select sum(i.preco * ic.quantidade) into total from compra c
+    join ingresso_compra ic on c.id_compra = ic.fk_id_compra
+    join ingresso i on i.id_ingresso = ic.fk_id_ingresso
+    where c.fk_id_usuario = pid_usuario;
+
+    return ifnull (total, 0);
+end; $$
+delimiter ;
+
+delimiter $$
+create function buscar_faixa_etaria_usuario(pid int)
+returns varchar(20)
+not deterministic
+reads sql data
+begin
+    declare nascimento date;
+    declare faixa varchar(20);
+    select data_nascimento into nascimento from usuario where id_usuario = pid;
+    set faixa = faixa_etaria(nascimento);
+    return faixa;
+
+end; $$
+
+delimiter ;
+
+delimiter $$ 
+create function total_ingressos_vendidos(id_evento int)
+returns int 
+reads sql data
+begin
+declare total int;
+select sum(quantidade) into total from ingresso_compra ic 
+join ingresso i on i.id_ingresso = ic.fk_id_ingresso
+where i.fk_id_evento = id_evento;
+return total;
+end; $$
+delimiter ;
+
+delimiter $$
+create function renda_total_evento(id_evento int)
+returns decimal (10,2)
+reads sql data
+not deterministic
+begin
+    declare total decimal(10,2);
+    select sum(i.preco * ic.quantidade) into total 
+    from compra c
+    join ingresso_compra ic on c.id_compra = ic.fk_id_compra
+    join ingresso i on i.id_ingresso = ic.fk_id_ingresso
+where i.fk_id_evento = id_evento;
+return total;
+end; $$
+delimiter ;
